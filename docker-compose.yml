@@ -1,0 +1,33 @@
+services:
+  postgres:
+    image: postgres:16.4-alpine3.19
+    environment:
+      POSTGRES_DB: stocks_products
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5432:5432
+
+  nginx:
+    image: nginx:1.27.1-alpine
+    volumes:
+      - ./config/default.conf:/etc/nginx/conf.d/default.conf
+      - ./config/nginx.conf:/etc/nginx/nginx.conf
+      - ./config/proxy_params:/etc/nginx/proxy_params
+      - ./stocks_products:/opt/app_stocks_products
+    ports:
+      - 80:80
+
+  backend:
+    build:
+      context: ./stocks_products
+      dockerfile: ../Dockerfile
+    depends_on:
+      - postgres
+    restart: always
+    volumes:
+      - ./stocks_products:/opt/app_stocks_products
+    env_file:
+      - .env
+    expose:
+      - 8000
