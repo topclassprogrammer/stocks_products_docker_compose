@@ -1,6 +1,5 @@
 #!/bin/sh
 
-sleep 5
 python manage.py migrate
 python manage.py loaddata stock_products.json
 python manage.py collectstatic

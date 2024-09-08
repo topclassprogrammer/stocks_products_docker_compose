@@ -5,8 +5,6 @@ services:
       POSTGRES_DB: stocks_products
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-    ports:
-      - 5432:5432
 
   nginx:
     image: nginx:1.27.1-alpine
@@ -21,13 +19,12 @@ services:
   backend:
     build:
       context: ./stocks_products
-      dockerfile: ../Dockerfile
+      dockerfile: Dockerfile
     depends_on:
       - postgres
+    command: /opt/app_stocks_products/wait-for-it.sh postgres:5432 -- /opt/app_stocks_products/start.sh
     restart: always
     volumes:
       - ./stocks_products:/opt/app_stocks_products
     env_file:
       - .env
-    expose:
-      - 8000
